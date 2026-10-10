@@ -1,8 +1,6 @@
 package org.example.client;
 
-import io.restassured.response.ValidatableResponse;
 import org.example.model.CreateOrder;
-import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
@@ -19,7 +17,7 @@ public class OrderClient {
         RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru";
     }
 
-    @Step("Создание заказа")
+    //Создание заказа
     public Response createNewOrder(CreateOrder order) {
         return given()
                 .contentType(JSON)
@@ -28,7 +26,7 @@ public class OrderClient {
                 .post(POST_ORDER_CREATE);
     }
 
-    @Step("Получение списка заказов")
+    //Получение списка заказов
     public Response getListOrders() {
         return given()
                 .contentType(JSON)
