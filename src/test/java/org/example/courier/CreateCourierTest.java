@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import org.example.client.CourierClient;
 import org.example.model.CreateCourier;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,12 +16,6 @@ public class CreateCourierTest {
     private CreateCourier courier;
     private final CourierClient courierClient = new CourierClient();
     private String id;
-
-    @BeforeEach
-    void setUp() {
-        courier = null;
-        id = null;
-    }
 
     @Test
     @DisplayName("Проверка кода ответа и ok: true для ручки /api/v1/courier") // имя теста
@@ -82,11 +75,15 @@ public class CreateCourierTest {
     void postCreateCourierWithDuplicateLogin() {
         // 1. Генерируем и создаём курьера первый раз
         courier = GenerateCourier.generateValidCourier();
-        courierClient.create(courier);
+        Response firstResponse = courierClient.create(courier);
         // 2. Пытаемся создать курьера с теми же данными ещё раз
         Response secondResponse = courierClient.create(courier);
         // 3. Проверяем, что сервер вернул 409 (Conflict)
         assertEquals(409, secondResponse.statusCode());
+        Object idObj = firstResponse.path("id");
+        if (idObj != null) {
+            id = idObj.toString();
+        }
     }
 
     @AfterEach
@@ -94,11 +91,14 @@ public class CreateCourierTest {
         if (id != null) {
             try {
                 courierClient.delete(id);
+                System.out.println("Курьер с id=" + id + " удалён");
             } catch (Exception e) {
-                // Игнорируем ошибки удаления: курьер мог уже быть удалён
+                System.out.println("Не удалось удалить курьера с id=" + id + ": " + e.getMessage());
             } finally {
                 id = null; // сбрасываем, чтобы не удалить лишнего в следующем тесте
             }
+        } else {
+            System.out.println("ID не найден — удаление не требуется");
         }
     }
 }
