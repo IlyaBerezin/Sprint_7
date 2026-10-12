@@ -4,6 +4,7 @@ import org.example.model.CreateCourier;
 import org.example.model.LoginCourier;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -18,7 +19,8 @@ public class CourierClient {
 
     public Response create(CreateCourier courier) {
         return given()
-                .contentType(JSON)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
                 .and()
                 .body(courier)
                 .when()

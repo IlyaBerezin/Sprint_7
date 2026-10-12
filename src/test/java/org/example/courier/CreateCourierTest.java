@@ -10,6 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static io.restassured.RestAssured.*;
+import io.restassured.config.DecoderConfig;
+import io.restassured.parsing.Parser;
+import io.restassured.response.Response;
 
 public class CreateCourierTest {
 
@@ -76,14 +80,15 @@ public class CreateCourierTest {
         // 1. Генерируем и создаём курьера первый раз
         courier = GenerateCourier.generateValidCourier();
         Response firstResponse = courierClient.create(courier);
-        // 2. Пытаемся создать курьера с теми же данными ещё раз
-        Response secondResponse = courierClient.create(courier);
-        // 3. Проверяем, что сервер вернул 409 (Conflict)
-        assertEquals(409, secondResponse.statusCode());
+
         Object idObj = firstResponse.path("id");
         if (idObj != null) {
             id = idObj.toString();
         }
+        // 2. Пытаемся создать курьера с теми же данными ещё раз
+        Response secondResponse = courierClient.create(courier);
+        // 3. Проверяем, что сервер вернул 409 (Conflict)
+        assertEquals(409, secondResponse.statusCode());
     }
 
     @AfterEach
